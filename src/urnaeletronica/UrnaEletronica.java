@@ -3,31 +3,40 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package votacao;
+package urnaeletronica;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 /**
  *
  * @author LIANCARLORolim
  */
-public class Votacao {
+public class UrnaEletronica {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        // TODO code application logic here
         
-        Votacao v = new Votacao();
-        v.escolheCandidato();
-
+        UrnaEletronica e = new UrnaEletronica();
+        e.escolheCandidato();
+        
     }
     
     public void escolheCandidato(){
@@ -50,9 +59,7 @@ public class Votacao {
         Descricao.setBounds(120, 50, 400, 20);
         JTextField caixa = new JTextField("");
         caixa.setBounds(120, 220, 560, 25);
-        //caixa.addKeyListener(new MyListener()); 
-       
-        
+
         JButton enter = new JButton("Enter");
         enter.setBounds(120, 300, 120, 25);
         
@@ -60,9 +67,51 @@ public class Votacao {
         JButton branco = new JButton("Branco");
         branco.setBounds(340, 300, 120, 25);
         
+        branco.addActionListener((ActionEvent e) -> {
+            
+            Socket socketCliente = null;
+            
+            try {
+            
+            socketCliente = new Socket("localhost", 6791);
+            System.out.println("Conectado ao Contador!");
+            DataInputStream dis = new DataInputStream(
+                    socketCliente.getInputStream());
+            DataOutputStream dos = new DataOutputStream(
+                    socketCliente.getOutputStream());
+            
+            dos.writeUTF("branco");
+            
+            
+        } catch (IOException ex) {
+            
+            Logger.getLogger(UrnaEletronica.class.getName()).log(Level.SEVERE, null, ex);
+            
+        } finally{
+            
+            try {
+                
+                if(socketCliente != null)
+                    socketCliente.close();
+                
+            } catch (IOException ex) {
+                
+                Logger.getLogger(UrnaEletronica.class.getName()).log(Level.SEVERE, null, ex);
+                
+            }
+        }
+            
+        JOptionPane.showMessageDialog(f, "Voto computado com sucesso");
+        
+        f.dispose();
+        UrnaEletronica vot = new UrnaEletronica();
+        vot.escolheCandidato();
+            
+        });
+        
         enter.addActionListener((ActionEvent e) -> {
             
-            Votacao vot = new Votacao();
+            UrnaEletronica vot = new UrnaEletronica();
             
             if("13".equals(caixa.getText())){
                 
@@ -138,7 +187,7 @@ public class Votacao {
         corrige.addActionListener((ActionEvent e) -> {
             
             f.dispose();
-            Votacao vot = new Votacao();
+            UrnaEletronica vot = new UrnaEletronica();
             vot.escolheCandidato();
             
         });
@@ -149,7 +198,45 @@ public class Votacao {
         
         // executaca ação do botao... contabiliza o voto nesse caso!!!
         confirma.addActionListener((ActionEvent e) -> {
-            System.out.println("imprimi");
+            
+            Socket socketCliente = null;
+            
+            try {
+            
+            socketCliente = new Socket("localhost", 6791);
+            System.out.println("Conectado ao Contador!");
+            DataInputStream dis = new DataInputStream(
+                    socketCliente.getInputStream());
+            DataOutputStream dos = new DataOutputStream(
+                    socketCliente.getOutputStream());
+            
+            dos.writeUTF(partido);
+            
+            
+        } catch (IOException ex) {
+            
+            Logger.getLogger(UrnaEletronica.class.getName()).log(Level.SEVERE, null, ex);
+            
+        } finally{
+            
+            try {
+                
+                if(socketCliente != null)
+                    socketCliente.close();
+                
+            } catch (IOException ex) {
+                
+                Logger.getLogger(UrnaEletronica.class.getName()).log(Level.SEVERE, null, ex);
+                
+            }
+        }
+            
+        JOptionPane.showMessageDialog(f, "Voto computado com sucesso");
+        
+        f.dispose();
+        UrnaEletronica vot = new UrnaEletronica();
+        vot.escolheCandidato();
+        
         });
             
             // adiciona as Labels
